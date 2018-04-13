@@ -1,6 +1,7 @@
 using System;
+using Csi.Internal;
 
-namespace Csi.V0
+namespace Csi.V0.Server
 {
     public abstract class CsiRpcServer : ICsiRpcServer
     {
@@ -24,7 +25,7 @@ namespace Csi.V0
 
         private bool enableService(string serviceName)
         {
-            var disableVar = "CSISERVICE_DISABLE_" + serviceName.ToUpper();
+            var disableVar = "CSI_SERVICE_DISABLE_" + serviceName.ToUpper();
             return string.IsNullOrEmpty(Environment.GetEnvironmentVariable(disableVar));
         }
     }

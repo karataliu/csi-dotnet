@@ -1,4 +1,4 @@
-﻿namespace Csi.V0
+﻿namespace Csi.V0.Server
 {
     public interface ICsiRpcServer
     {

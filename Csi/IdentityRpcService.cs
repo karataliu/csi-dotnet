@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Grpc.Core;
 
-namespace Csi.V0
+namespace Csi.V0.Server
 {
     public sealed class IdentityRpcService : Identity.IdentityBase
     {

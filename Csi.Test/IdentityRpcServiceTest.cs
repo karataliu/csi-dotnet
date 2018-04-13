@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Csi.V0;
+using Csi.V0.Server;
 using Grpc.Core;
 using Xunit;
 
