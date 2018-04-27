@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2036
@@ -7,10 +7,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Csi", "Csi\Csi.csproj", "{6
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Csi.Test", "Csi.Test\Csi.Test.csproj", "{6608E13C-1367-4A2B-ACE7-CD757E0483E3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{F871DCAB-01A0-45A2-AB1E-31337E268A87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Csi.Codegen", "tools\Csi.Codegen\Csi.Codegen.csproj", "{50DAD9A4-2A20-417A-AB2D-9E129CA190D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{6615CA35-1B4E-49B3-8D08-FFC50BF80C10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -21,11 +29,26 @@ Global
 		{6608E13C-1367-4A2B-ACE7-CD757E0483E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6608E13C-1367-4A2B-ACE7-CD757E0483E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6608E13C-1367-4A2B-ACE7-CD757E0483E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50DAD9A4-2A20-417A-AB2D-9E129CA190D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50DAD9A4-2A20-417A-AB2D-9E129CA190D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50DAD9A4-2A20-417A-AB2D-9E129CA190D4}.Debug|x64.ActiveCfg = Debug|x64
+		{50DAD9A4-2A20-417A-AB2D-9E129CA190D4}.Debug|x64.Build.0 = Debug|x64
+		{50DAD9A4-2A20-417A-AB2D-9E129CA190D4}.Debug|x86.ActiveCfg = Debug|x86
+		{50DAD9A4-2A20-417A-AB2D-9E129CA190D4}.Debug|x86.Build.0 = Debug|x86
+		{50DAD9A4-2A20-417A-AB2D-9E129CA190D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50DAD9A4-2A20-417A-AB2D-9E129CA190D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50DAD9A4-2A20-417A-AB2D-9E129CA190D4}.Release|x64.ActiveCfg = Release|x64
+		{50DAD9A4-2A20-417A-AB2D-9E129CA190D4}.Release|x64.Build.0 = Release|x64
+		{50DAD9A4-2A20-417A-AB2D-9E129CA190D4}.Release|x86.ActiveCfg = Release|x86
+		{50DAD9A4-2A20-417A-AB2D-9E129CA190D4}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A76CC432-40B8-4696-9395-A6C2555C6A6E}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{50DAD9A4-2A20-417A-AB2D-9E129CA190D4} = {F871DCAB-01A0-45A2-AB1E-31337E268A87}
 	EndGlobalSection
 EndGlobal
