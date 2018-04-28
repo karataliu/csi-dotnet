@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Core.Logging;
@@ -26,9 +27,17 @@ namespace Csi
             {
                 while (true)
                 {
-                    process = Process.Start(processInfo);
-                    process.WaitForExit();
-                    logger.Warning("process exits, will restart.");
+                    try
+                    {
+                        process = Process.Start(processInfo);
+                        process.WaitForExit();
+                        logger.Warning("process exits, will restart.");
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Warning("exception " + ex.Message);
+                    }
+                    Thread.Sleep(2000);
                 }
             });
 
