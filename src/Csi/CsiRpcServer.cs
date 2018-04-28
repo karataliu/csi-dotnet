@@ -7,7 +7,7 @@ namespace Csi.V0.Server
 {
     public sealed class CsiRpcServer : ICsiRpcServer
     {
-        public string Endpoint { get; set; }
+        public string Endpoint { get; set; } = "127.0.0.1:10000";
         public CsiRpcServiceType ServiceType { get; set; }
 
         private readonly ICsiRpcServiceFactory csiRpcServiceFactory;
@@ -20,12 +20,27 @@ namespace Csi.V0.Server
         public void Start()
         {
             var grpcServer = new GrpcServer();
-            grpcServer.AddEndpoint("127.0.0.1", 8080);
+            grpcServer.AddEndpoint(generateEndpoint());
+            GrpcEnvironment.Logger.Info("Listening at: {0}", Endpoint);
             grpcServer.AddServices(generateDefinitions());
 
             grpcServer.Start();
         }
-        
+
+        private ServerPort generateEndpoint()
+        {
+            var idx = Endpoint.IndexOf(":");
+            if (idx > 0)
+            {
+                return new ServerPort(
+                    Endpoint.Substring(0, idx),
+                    int.Parse(Endpoint.Substring(idx + 1)),
+                    ServerCredentials.Insecure);
+            }
+
+            throw new System.Exception("Unsupported endpoint " + Endpoint);
+        }
+
         private IEnumerable<ServerServiceDefinition> generateDefinitions()
         {
             ILogger logger = GrpcEnvironment.Logger;

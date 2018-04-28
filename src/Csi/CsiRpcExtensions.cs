@@ -15,8 +15,21 @@ namespace Csi.V0.Server
                 var disableVar = disablePrefix + st.ToString().ToUpper();
                 if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(disableVar))) stype |= st;
             }
-            Console.WriteLine(stype);
             csiRpcServer.ServiceType = stype;
+        }
+
+        public static void SetEndpointFromEnvironment(
+          this ICsiRpcServer csiRpcServer,
+          string epVar = "CSI_ENDPOINT")
+        {
+            var ep = Environment.GetEnvironmentVariable(epVar);
+            if (ep != null) csiRpcServer.Endpoint = ep;
+        }
+
+        public static void ConfigFromEnvironment(this ICsiRpcServer csiRpcServer)
+        {
+            csiRpcServer.SetServiceTypeFromEnvironment();
+            csiRpcServer.SetEndpointFromEnvironment();
         }
     }
 }

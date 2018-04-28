@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Csi.V0;
 using Csi.V0.Server;
 using Grpc.Core;
@@ -14,7 +15,11 @@ namespace Csi.SampleServer
             ICsiRpcServer s1 = new CsiRpcServer(new SampleFactory());
             //s1.SetServiceTypeFromEnvironment();
             s1.ServiceType = CsiRpcServiceType.Identity;
+            //s1.Endpoint = "127.0.0.18666";
+            s1.SetEndpointFromEnvironment();
             s1.Start();
+
+            Thread.Sleep(Timeout.Infinite);
         }
     }
 

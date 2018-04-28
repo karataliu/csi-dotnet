@@ -14,7 +14,7 @@ namespace Csi.Internal
             foreach (var ssd in ssds) server.Services.Add(ssd);
         }
 
-        public void AddEndpoint(string host, int port)
-            => server.Ports.Add(host, port, ServerCredentials.Insecure);
+        public void AddEndpoint(ServerPort serverPort)
+            => server.Ports.Add(serverPort);
     }
 }
