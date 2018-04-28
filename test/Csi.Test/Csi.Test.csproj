@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Csi\Csi.csproj" />
+    <ProjectReference Include="..\..\src\Csi\Csi.csproj" />
   </ItemGroup>
 
 </Project>
