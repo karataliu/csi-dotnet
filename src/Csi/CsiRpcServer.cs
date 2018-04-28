@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Grpc.Core;
 using Grpc.Core.Logging;
@@ -10,6 +9,7 @@ namespace Csi.V0.Server
         public string Endpoint { get; set; } = "127.0.0.1:10000";
         public CsiRpcServiceType ServiceType { get; set; }
 
+        private readonly ILogger logger = GrpcEnvironment.Logger;
         private readonly ICsiRpcServiceFactory csiRpcServiceFactory;
         private readonly FileSocketEndpointHandler fse;
 
@@ -23,31 +23,15 @@ namespace Csi.V0.Server
         public void Start()
         {
             var grpcServer = new Grpc.Core.Server();
-            grpcServer.AddServices(generateDefinitions());
+            var definitions = ServiceType.CreateDefinitions(t =>
+            {
+                logger.Info("Load {0} service", t);
+                return csiRpcServiceFactory.CreateDefinition(t);
+            });
+            grpcServer.AddServices(definitions);
             grpcServer.Ports.Add(generateEndpoint());
-            GrpcEnvironment.Logger.Info("Listening at: {0}", Endpoint);
+            logger.Info("Listening at: {0}", Endpoint);
             grpcServer.Start();
-        }
-
-        private IEnumerable<ServerServiceDefinition> generateDefinitions()
-        {
-            ILogger logger = GrpcEnvironment.Logger;
-
-            if (ServiceType.HasFlag(CsiRpcServiceType.Identity))
-            {
-                logger.Info("Load {0} service", CsiRpcServiceType.Identity);
-                yield return Identity.BindService(csiRpcServiceFactory.CreateIdentityRpcService());
-            }
-            if (ServiceType.HasFlag(CsiRpcServiceType.Controller))
-            {
-                logger.Info("Adding {0} service", CsiRpcServiceType.Controller);
-                yield return Controller.BindService(csiRpcServiceFactory.CreateControllerRpcService());
-            }
-            if (ServiceType.HasFlag(CsiRpcServiceType.Node))
-            {
-                logger.Info("Adding {0} service", CsiRpcServiceType.Node);
-                yield return Node.BindService(csiRpcServiceFactory.CreateNodeRpcService());
-            }
         }
 
         private ServerPort generateEndpoint()

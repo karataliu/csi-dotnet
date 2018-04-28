@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace Csi.V0.Server
 {
@@ -9,8 +8,8 @@ namespace Csi.V0.Server
             this CsiRpcServer csiRpcServer,
             string disablePrefix = "CSI_SERVICE_DISABLE_")
         {
-            var stype = CsiRpcServiceType.None;
-            foreach (var st in Enum.GetValues(typeof(CsiRpcServiceType)).Cast<CsiRpcServiceType>())
+            var stype = default(CsiRpcServiceType);
+            foreach (var st in EnumHelper.AllValues<CsiRpcServiceType>())
             {
                 var disableVar = disablePrefix + st.ToString().ToUpper();
                 if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(disableVar))) stype |= st;
