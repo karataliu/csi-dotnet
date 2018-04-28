@@ -11,26 +11,26 @@ namespace Csi.SampleServer
         static void Main(string[] args)
         {
             GrpcEnvironment.SetLogger(new ConsoleLogger());
-            ICsiRpcServer s1 = new Server1();
-            s1.SetServiceTypeFromEnvironment();
+            ICsiRpcServer s1 = new CsiRpcServer(new SampleFactory());
+            //s1.SetServiceTypeFromEnvironment();
+            s1.ServiceType = CsiRpcServiceType.Identity;
             s1.Start();
         }
     }
 
-    class Server1 : CsiRpcServer
+    class SampleFactory : ICsiRpcServiceFactory
     {
-       
-        public override Controller.ControllerBase CreateControllerRpcService()
+        public Controller.ControllerBase CreateControllerRpcService()
         {
             throw new NotImplementedException();
         }
 
-        public override Identity.IdentityBase CreateIdentityRpcService()
+        public Identity.IdentityBase CreateIdentityRpcService()
         {
             return new IdentityRpcService("a", "v1");
         }
 
-        public override Node.NodeBase CreateNodeRpcService()
+        public Node.NodeBase CreateNodeRpcService()
         {
             throw new NotImplementedException();
         }

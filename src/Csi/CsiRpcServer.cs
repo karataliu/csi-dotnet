@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Csi.Internal;
 using Grpc.Core;
@@ -6,15 +5,17 @@ using Grpc.Core.Logging;
 
 namespace Csi.V0.Server
 {
-    public abstract class CsiRpcServer : ICsiRpcServer
+    public sealed class CsiRpcServer : ICsiRpcServer
     {
         public string Endpoint { get; set; }
         public CsiRpcServiceType ServiceType { get; set; }
 
-        public abstract Identity.IdentityBase CreateIdentityRpcService();
-        public abstract Controller.ControllerBase CreateControllerRpcService();
-        public abstract Node.NodeBase CreateNodeRpcService();
- 
+        private readonly ICsiRpcServiceFactory csiRpcServiceFactory;
+
+        public CsiRpcServer(ICsiRpcServiceFactory csiRpcServiceFactory)
+        {
+            this.csiRpcServiceFactory = csiRpcServiceFactory;
+        }
 
         public void Start()
         {
@@ -32,17 +33,17 @@ namespace Csi.V0.Server
             if (ServiceType.HasFlag(CsiRpcServiceType.Identity))
             {
                 logger.Info("Adding {0} service", CsiRpcServiceType.Identity);
-                yield return Identity.BindService(CreateIdentityRpcService());
+                yield return Identity.BindService(csiRpcServiceFactory.CreateIdentityRpcService());
             }
             if (ServiceType.HasFlag(CsiRpcServiceType.Controller))
             {
                 logger.Info("Adding {0} service", CsiRpcServiceType.Controller);
-                yield return Controller.BindService(CreateControllerRpcService());
+                yield return Controller.BindService(csiRpcServiceFactory.CreateControllerRpcService());
             }
             if (ServiceType.HasFlag(CsiRpcServiceType.Node))
             {
                 logger.Info("Adding {0} service", CsiRpcServiceType.Node);
-                yield return Node.BindService(CreateNodeRpcService());
+                yield return Node.BindService(csiRpcServiceFactory.CreateNodeRpcService());
             }
         }
     }
