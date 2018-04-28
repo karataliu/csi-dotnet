@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -17,6 +18,8 @@ namespace Csi
 
         public ServerPort Handle(string socket)
         {
+            if (File.Exists(socket)) File.Delete(socket);
+
             var processInfo = new ProcessStartInfo(scBIn)
             {
                 Arguments = $"-d UNIX-LISTEN:{socket},fork TCP4:{host}:{port}",

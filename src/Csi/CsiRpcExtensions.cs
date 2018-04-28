@@ -6,7 +6,7 @@ namespace Csi.V0.Server
     public static class CsiRpcExtensions
     {
         public static void SetServiceTypeFromEnvironment(
-            this ICsiRpcServer csiRpcServer,
+            this CsiRpcServer csiRpcServer,
             string disablePrefix = "CSI_SERVICE_DISABLE_")
         {
             var stype = CsiRpcServiceType.None;
@@ -19,14 +19,14 @@ namespace Csi.V0.Server
         }
 
         public static void SetEndpointFromEnvironment(
-          this ICsiRpcServer csiRpcServer,
+          this CsiRpcServer csiRpcServer,
           string epVar = "CSI_ENDPOINT")
         {
             var ep = Environment.GetEnvironmentVariable(epVar);
             if (ep != null) csiRpcServer.Endpoint = ep;
         }
 
-        public static void ConfigFromEnvironment(this ICsiRpcServer csiRpcServer)
+        public static void ConfigFromEnvironment(this CsiRpcServer csiRpcServer)
         {
             csiRpcServer.SetServiceTypeFromEnvironment();
             csiRpcServer.SetEndpointFromEnvironment();

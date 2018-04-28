@@ -12,7 +12,7 @@ namespace Csi.SampleServer
         static void Main(string[] args)
         {
             GrpcEnvironment.SetLogger(new ConsoleLogger());
-            ICsiRpcServer s1 = new CsiRpcServer(new SampleFactory());
+            var s1 = new CsiRpcServer(new SampleFactory());
             //s1.SetServiceTypeFromEnvironment();
             s1.ServiceType = CsiRpcServiceType.Identity;
             //s1.Endpoint = "127.0.0.18666";
