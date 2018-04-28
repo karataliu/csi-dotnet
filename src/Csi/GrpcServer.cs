@@ -1,14 +1,52 @@
-﻿using System;
+﻿using Grpc.Core;
+using Grpc.Core.Logging;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Grpc.Core;
-using Grpc.Core.Logging;
 
-namespace Csi
+namespace Csi.Internal
 {
-    class FileSocketEndpointHandler : IDisposable
+    sealed class GrpcServer
+    {
+        private readonly Server grpcServer = new Server();
+        private readonly UnixDomainSocketEndpointHandler fse;
+
+        public GrpcServer(string endpoint, IEnumerable<ServerServiceDefinition> definitions)
+        {
+            grpcServer.Ports.Add(generateEndpoint(endpoint));
+            foreach (var ssd in definitions) grpcServer.Services.Add(ssd);
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                fse = new UnixDomainSocketEndpointHandler();
+        }
+
+        public void Start() => grpcServer.Start();
+
+        private ServerPort generateEndpoint(string endpoint)
+        {
+            var idx = endpoint.IndexOf(":");
+            if (idx > 0)
+            {
+                return new ServerPort(
+                    endpoint.Substring(0, idx),
+                    int.Parse(endpoint.Substring(idx + 1)),
+                    ServerCredentials.Insecure);
+            }
+
+            if (fse != null && endpoint.StartsWith("/"))
+            {
+                return fse.Handle(endpoint);
+            }
+
+            throw new Exception("Unsupported endpoint " + endpoint);
+        }
+    }
+
+    class UnixDomainSocketEndpointHandler : IDisposable
     {
         private const string host = "127.0.0.1";
         private const int port = 10000;
@@ -60,6 +98,5 @@ namespace Csi
             }
         }
         #endregion
-
     }
 }

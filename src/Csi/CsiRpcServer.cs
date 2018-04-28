@@ -1,72 +1,50 @@
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
+using Csi.Internal;
 using Grpc.Core;
 using Grpc.Core.Logging;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Csi.V0.Server
 {
-    public sealed class CsiRpcServer
+    public interface ICsiRpcServer
+    {
+        string Endpoint { set; }
+        CsiRpcServiceType ServiceType { set; }
+        void Start();
+    }
+
+    public sealed class CsiRpcServer : ICsiRpcServer
     {
         public string Endpoint { get; set; } = "127.0.0.1:10000";
         public CsiRpcServiceType ServiceType { get; set; }
 
         private readonly ICsiRpcServiceFactory csiRpcServiceFactory;
-        private readonly FileSocketEndpointHandler fse;
+        private readonly ILogger logger = GrpcEnvironment.Logger;
 
         public CsiRpcServer(ICsiRpcServiceFactory csiRpcServiceFactory)
-        {
-            this.csiRpcServiceFactory = csiRpcServiceFactory;
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                fse = new FileSocketEndpointHandler();
-        }
+            => this.csiRpcServiceFactory = csiRpcServiceFactory;
 
         public void Start()
         {
-            var grpcServer = new Grpc.Core.Server();
-            grpcServer.AddServices(generateDefinitions());
-            grpcServer.Ports.Add(generateEndpoint());
-            GrpcEnvironment.Logger.Info("Listening at: {0}", Endpoint);
-            grpcServer.Start();
+            new GrpcServer(Endpoint, createDefinitions()).Start();
+            logger.Info("Listen at: {0}", Endpoint);
         }
 
-        private IEnumerable<ServerServiceDefinition> generateDefinitions()
+        public IEnumerable<ServerServiceDefinition> createDefinitions()
         {
-            ILogger logger = GrpcEnvironment.Logger;
-
-            if (ServiceType.HasFlag(CsiRpcServiceType.Identity))
+            if (ServiceType == default(CsiRpcServiceType))
             {
-                logger.Info("Load {0} service", CsiRpcServiceType.Identity);
-                yield return Identity.BindService(csiRpcServiceFactory.CreateIdentityRpcService());
-            }
-            if (ServiceType.HasFlag(CsiRpcServiceType.Controller))
-            {
-                logger.Info("Adding {0} service", CsiRpcServiceType.Controller);
-                yield return Controller.BindService(csiRpcServiceFactory.CreateControllerRpcService());
-            }
-            if (ServiceType.HasFlag(CsiRpcServiceType.Node))
-            {
-                logger.Info("Adding {0} service", CsiRpcServiceType.Node);
-                yield return Node.BindService(csiRpcServiceFactory.CreateNodeRpcService());
-            }
-        }
-
-        private ServerPort generateEndpoint()
-        {
-            var idx = Endpoint.IndexOf(":");
-            if (idx > 0)
-            {
-                return new ServerPort(
-                    Endpoint.Substring(0, idx),
-                    int.Parse(Endpoint.Substring(idx + 1)),
-                    ServerCredentials.Insecure);
+                logger.Warning("No service loaded, set ServiceType property to enable service");
+                return Enumerable.Empty<ServerServiceDefinition>();
             }
 
-            if (fse != null && Endpoint.StartsWith("/"))
-            {
-                return fse.Handle(Endpoint);
-            }
-
-            throw new System.Exception("Unsupported endpoint " + Endpoint);
+            return EnumHelper.AllValues<CsiRpcServiceType>()
+               .Where(t => ServiceType.HasFlag(t))
+               .Select(t =>
+               {
+                   logger.Info("Load {0} service", t);
+                   return csiRpcServiceFactory.CreateDefinition(t);
+               });
         }
     }
 }

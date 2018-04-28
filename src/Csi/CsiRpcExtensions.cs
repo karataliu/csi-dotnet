@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Linq;
 
 namespace Csi.V0.Server
 {
     public static class CsiRpcExtensions
     {
-        public static void SetServiceTypeFromEnvironment(
-            this CsiRpcServer csiRpcServer,
+        public static void ConfigServiceTypeFromEnvironment(
+            this ICsiRpcServer csiRpcServer,
             string disablePrefix = "CSI_SERVICE_DISABLE_")
         {
-            var stype = CsiRpcServiceType.None;
-            foreach (var st in Enum.GetValues(typeof(CsiRpcServiceType)).Cast<CsiRpcServiceType>())
+            var stype = default(CsiRpcServiceType);
+            foreach (var st in EnumHelper.AllValues<CsiRpcServiceType>())
             {
                 var disableVar = disablePrefix + st.ToString().ToUpper();
                 if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(disableVar))) stype |= st;
@@ -18,18 +17,18 @@ namespace Csi.V0.Server
             csiRpcServer.ServiceType = stype;
         }
 
-        public static void SetEndpointFromEnvironment(
-          this CsiRpcServer csiRpcServer,
+        public static void ConfigEndpointFromEnvironment(
+          this ICsiRpcServer csiRpcServer,
           string epVar = "CSI_ENDPOINT")
         {
             var ep = Environment.GetEnvironmentVariable(epVar);
             if (ep != null) csiRpcServer.Endpoint = ep;
         }
 
-        public static void ConfigFromEnvironment(this CsiRpcServer csiRpcServer)
+        public static void ConfigFromEnvironment(this ICsiRpcServer csiRpcServer)
         {
-            csiRpcServer.SetServiceTypeFromEnvironment();
-            csiRpcServer.SetEndpointFromEnvironment();
+            csiRpcServer.ConfigServiceTypeFromEnvironment();
+            csiRpcServer.ConfigEndpointFromEnvironment();
         }
     }
 }

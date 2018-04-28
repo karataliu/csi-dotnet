@@ -35,20 +35,14 @@ namespace Csi.V0.Server
         public override Task<GetPluginInfoResponse> GetPluginInfo(
             GetPluginInfoRequest request,
             ServerCallContext context)
-        {
-            return Task.FromResult(pluginInfo);
-        }
+            => Task.FromResult(pluginInfo);
 
         public override Task<GetPluginCapabilitiesResponse> GetPluginCapabilities(
             GetPluginCapabilitiesRequest request,
             ServerCallContext context)
-        {
-            return Task.FromResult(pluginCapabilities);
-        }
+            => Task.FromResult(pluginCapabilities);
 
         public override Task<ProbeResponse> Probe(ProbeRequest request, ServerCallContext context)
-        {
-            return Task.FromResult(probe); ;
-        }
+            => Task.FromResult(probe);
     }
 }
