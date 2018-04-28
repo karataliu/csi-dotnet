@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Csi.Internal;
 using Grpc.Core;
 using Grpc.Core.Logging;
@@ -11,10 +12,13 @@ namespace Csi.V0.Server
         public CsiRpcServiceType ServiceType { get; set; }
 
         private readonly ICsiRpcServiceFactory csiRpcServiceFactory;
+        private readonly FileSocketEndpointHandler fse;
 
         public CsiRpcServer(ICsiRpcServiceFactory csiRpcServiceFactory)
         {
             this.csiRpcServiceFactory = csiRpcServiceFactory;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                fse = new FileSocketEndpointHandler();
         }
 
         public void Start()
@@ -36,6 +40,11 @@ namespace Csi.V0.Server
                     Endpoint.Substring(0, idx),
                     int.Parse(Endpoint.Substring(idx + 1)),
                     ServerCredentials.Insecure);
+            }
+
+            if(fse!=null && Endpoint.StartsWith("/"))
+            {
+                return fse.Handle(Endpoint);
             }
 
             throw new System.Exception("Unsupported endpoint " + Endpoint);
