@@ -2,13 +2,6 @@
 
 namespace Csi.V0.Server
 {
-    public interface ICsiRpcServer
-    {
-        string Endpoint { set; }
-        CsiRpcServiceType ServiceType { set; }
-        void Start();
-    }
-
     [Flags]
     public enum CsiRpcServiceType
     {
