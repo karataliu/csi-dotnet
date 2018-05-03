@@ -2,19 +2,14 @@
 
 namespace Csi.V0.Server
 {
-    public static class CsiRpcExtensions
+    public static class CsiRpcServerExtensions
     {
         public static void ConfigServiceTypeFromEnvironment(
             this ICsiRpcServer csiRpcServer,
-            string disablePrefix = "CSI_SERVICE_DISABLE_")
+            string disableVar = "CSIEXT_SERVICE_DISABLES")
         {
-            var stype = default(CsiRpcServiceType);
-            foreach (var st in EnumHelper.AllValues<CsiRpcServiceType>())
-            {
-                var disableVar = disablePrefix + st.ToString().ToUpper();
-                if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(disableVar))) stype |= st;
-            }
-            csiRpcServer.ServiceType = stype;
+            csiRpcServer.ServiceType 
+                = CsiRpcServiceTypeHelper.ParseDisables(Environment.GetEnvironmentVariable(disableVar));
         }
 
         public static void ConfigEndpointFromEnvironment(
