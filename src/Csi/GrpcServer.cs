@@ -17,29 +17,26 @@ namespace Csi.Internal
 
         public GrpcServer(string endpoint, IEnumerable<ServerServiceDefinition> definitions)
         {
-            grpcServer.Ports.Add(generateEndpoint(endpoint));
-            foreach (var ssd in definitions) grpcServer.Services.Add(ssd);
-
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 fse = new UnixDomainSocketEndpointHandler();
+
+            grpcServer.Ports.Add(generateEndpoint(endpoint));
+            foreach (var ssd in definitions) grpcServer.Services.Add(ssd);
         }
 
         public void Start() => grpcServer.Start();
 
         private ServerPort generateEndpoint(string endpoint)
         {
-            var idx = endpoint.IndexOf(":");
-            if (idx > 0)
-            {
-                return new ServerPort(
-                    endpoint.Substring(0, idx),
-                    int.Parse(endpoint.Substring(idx + 1)),
-                    ServerCredentials.Insecure);
-            }
-
-            if (fse != null && endpoint.StartsWith("/"))
-            {
-                return fse.Handle(endpoint);
+            switch (GrpcEndpoint.Parse(endpoint)){
+                case GrpcEndpoint.Ipv4 ipv4:
+                    return new ServerPort(
+                        ipv4.Host,
+                        ipv4.Port,
+                        ServerCredentials.Insecure);
+                case GrpcEndpoint.Unix unix:
+                    if (fse != null) return fse.Handle(unix.Path);
+                    break;
             }
 
             throw new Exception("Unsupported endpoint " + endpoint);
